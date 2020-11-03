@@ -1,3 +1,5 @@
+import java.util.Scanner; //I know it should be GUI so we can change it later.
+
 /**
  * Character table
  * 1	Bart Cassidy
@@ -214,27 +216,54 @@ public class Player {
 	
 	public void handAsText(int[] hand)
 	{
+      boolean Saloon[] = {false,false, false, false, false, false};
+      Scanner sc = new Scanner(System.in); //we can change this later
+      System.out.println("\nUse Saloon Dice? 1. Yes 2. No");
+      int option = sc.nextInt();
+      if(option ==1)
+         Saloon[0]=true;
+      
+       
+      
 		System.out.print("\n{");
 		for(int i =0; i < 5; i++)
 		{
 			switch(hand[i]) {
 			case 1:
-				System.out.print(" Arrow");
+            if(Saloon[i]==false)
+				   System.out.print(" Arrow");
+            else if(Saloon[i]==true)
+               System.out.print(" *Break Arrow*");
 				break;
 			case 2:
-				System.out.print(" Dynamite");
+            if(Saloon[i]==false)
+				   System.out.print(" Dynamite");
+            else if(Saloon[i]==true)
+               System.out.print(" *Bullet*"); //hurts player so theres some risk
 				break;
 			case 3:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" One-Space-Shot");
+            
 				break;
 			case 4:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" Two-Space-Shot");
+            
 				break;
 			case 5:
-				System.out.print(" Beer");
+            if(Saloon[i]==false)
+				   System.out.print(" Beer");
+            else if(Saloon[i]==true)
+               System.out.print(" *Two* Beers");
 				break;
 			case 6:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" Gatling Part");
+            
 				break;	
 			}
 			if(i<4)
@@ -242,7 +271,8 @@ public class Player {
 		}
 		System.out.print("}");
 	}
+   
+   
 	
 	
 }
-
