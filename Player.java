@@ -1,3 +1,5 @@
+import java.util.Scanner; //I know it should be GUI so we can change it later.
+
 /**
  * Character table
  * 1	Bart Cassidy
@@ -214,27 +216,54 @@ public class Player {
 	
 	public void handAsText(int[] hand)
 	{
+      boolean Saloon[] = {false,false, false, false, false, false};
+      Scanner sc = new Scanner(System.in); //we can change this later
+      System.out.println("\nUse Saloon Dice? 1. Yes 2. No");
+      int option = sc.nextInt();
+      if(option ==1)
+         Saloon[0]=true;
+      
+       
+      
 		System.out.print("\n{");
 		for(int i =0; i < 5; i++)
 		{
 			switch(hand[i]) {
 			case 1:
-				System.out.print(" Arrow");
+            if(Saloon[i]==false)
+				   System.out.print(" Arrow");
+            else if(Saloon[i]==true)
+               System.out.print(" *Break Arrow*");
 				break;
 			case 2:
-				System.out.print(" Dynamite");
+            if(Saloon[i]==false)
+				   System.out.print(" Dynamite");
+            else if(Saloon[i]==true)
+               System.out.print(" *Bullet*"); //hurts player so theres some risk
 				break;
 			case 3:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" One-Space-Shot");
+            
 				break;
 			case 4:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" Two-Space-Shot");
+            
 				break;
 			case 5:
-				System.out.print(" Beer");
+            if(Saloon[i]==false)
+				   System.out.print(" Beer");
+            else if(Saloon[i]==true)
+               System.out.print(" *Two* Beers");
 				break;
 			case 6:
+            if(Saloon[i]==true)
+               System.out.print(" *Two*");
 				System.out.print(" Gatling Part");
+            
 				break;	
 			}
 			if(i<4)
@@ -242,7 +271,99 @@ public class Player {
 		}
 		System.out.print("}");
 	}
-	
-	
-}
+   
+   /*
+	 * Method: getAbility()
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+   
+   public boolean getAbility(int character){
+         boolean resuse =false; //if they are allowed to reuse the abilty
+         boolean active; //determines whether or not their ability is player controlled or automatic 
+         switch(character)
+			{
+			case 1:
+				System.out.println( "Bart Cassidy used his special ability!");
+            System.out.println( "Added an arrow!");
+            System.out.println( "Restored one health!");
+				break;
+			case 2:
+				System.out.println( "Black Jack used his special ability!");
+            System.out.println( "Re-rolled hand!");
+            
+            int numberOfDynamite = 0;
+            for(int i=0;i<currentHand.length;i++){
+               if(currentHand[i]==2){
+                  numberOfDynamite++;
+               }
+            }
+            if(numberOfDynamite>=3){
+               System.out.println("\nAw, Rolled 3 dynamites! Too bad! Your turn ends!");
+            }
+            
+				break;
+			case 3:
+				System.out.println( "Calamity Janet used her special ability!");
+            System.out.println( "Converted 1 to a 2");
+				break;
+			case 4:
+				System.out.println( "El Gringo used his special ability!");
+            System.out.println( "Inflicted Arrow on Enemy Player!");
+            
+				break;
+			case 5:
+				System.out.println("Jesse Jones used his special ability!");
+            System.out.println( "Doubled beer heal!");
+            
+				break;
+			case 6:
+				System.out.println("Jourdonnais used his special ability!");
+            System.out.println( "Protected against arrows!"); //only lose up to 1 health
+				break;
+			case 7:
+				System.out.println("Kit Carlson used his special ability!");
+            System.out.println( "Removed arrow from ");
+            
+				break;
+			case 8:
+            int rerollCounter = 1;
+				System.out.println("Lucky Duke used his special ability!");
+            System.out.println( "Rerolled!"); // up to 4 times
+            
+				break;
+			case 9:
+				System.out.println("Paul Regret used his special ability!");
+            System.out.println( "Protection against gattling guns!"); //completely
+				break;
+			case 10:
+				System.out.println("Pedro Ramirez used his special ability!");
+				break;
+			case 11:
+				System.out.println("Rose Doolan used her special ability!");
+				break;
+			case 12:
+				System.out.println("Sid Ketchum used his special ability!");
+				break;
+			case 13:
+				System.out.println("Slab The Killer used his special ability!");
+				break;
+			case 14:
+				System.out.println("Suzy Lafayette used her special ability!");
+				break;
+			case 15:
+				System.out.println("Vulture Sam used his special ability!");
+				break;
+			case 16:
+				System.out.println("Willy The Kid used his special ability!");
+				break;
+			default:
+				System.out.println("Player used their special ability!");
+				break;
+			}
+         return resuse;
 
+   }
