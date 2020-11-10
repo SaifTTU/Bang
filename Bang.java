@@ -33,11 +33,7 @@ public class Bang {
              
 
               	Player playerTemp = new Player();
-               if(i==0)
-               playerTemp=pickYourCharacter(playerTemp);
-               
-               else
-           		   playerTemp.setPlayer(i, 1);
+           		playerTemp.setPlayer(i, 1);
               	table.add(playerTemp);
          }
          
@@ -153,6 +149,9 @@ public class Bang {
 	
 	public static void randomizeTable(Player[] table)
 	{
+      table[0]=pickYourCharacter(table[0]);
+      System.out.println(table[0].playerName);
+      
 		assignNames(table);
 		assignAffiliaton(table);
 		
@@ -181,23 +180,50 @@ public class Bang {
       int playerChoice = sc.nextInt();
       
       player.setPlayer(playerChoice, 1);
-      System.out.print(" "+player.playerName+"\n");
+      //System.out.print("\n"+player.playerName+"\n");
       return player;
    }
 	
+   public static void gameLoop(Player[] tableArray){
+      int players = tableArray.length;
+   
+      System.out.print("\nOrder: \n");
+      
+      for(int i=0;i<tableArray.length;i++){
+         System.out.print("\n"+(i+1)+". "+tableArray[i].playerName);
+      }
+      
+      int j = 0;
+      while(j!=10){
+         System.out.print("\n\nIt is: ");
+         if(tableArray[j%players].isIdentified==true){
+            tableArray[j%players].dispAffiliation();
+            System.out.print(": ");
+         }
+         System.out.print(tableArray[j%players].playerName+"'s turn.\n");
+         System.out.print("\n1. Roll Dice | 2. Use Ability | 3. Use Dice | 4.Check Ability | 5. End Turn");
+         System.out.print("\nThe Following Dice were rolled: ");
+         System.out.print("\nAttacked: ");
+         System.out.print("\nHealed: ");
+         System.out.print("\nCollected: ");
+         System.out.print("\nLost: "+""+" health.");
+         System.out.print("\nUsed: "+""+" ability.");
+         j++;
+      }
+      
+      //return tableArray;
+   }
 	
 	public static void main(String[] args) {
 		Dice dice = new Dice();
 		
-		
-		
+
 		LinkedList<Player> table = new LinkedList<Player>();
 		table = makeTable();
-		
 		Player[] tableArray = tableArray(table);
-		
-		
 		randomizeTable(tableArray);
+      
+      gameLoop(tableArray);
 	}
 
 }
