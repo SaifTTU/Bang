@@ -47,8 +47,10 @@ public class Player {
 	int character;
 	int affiliation;
 	int arrows = 0;
-   int gattling = 0;
+   	int gattling = 0;
+	int dynamite = 0;
 	boolean isHuman;
+	boolean isIdentified = false;
 	int gatling = 0;
 	int[] currentHand;
 	String playerName;
