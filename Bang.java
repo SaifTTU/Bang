@@ -17,22 +17,14 @@ public class Bang {
 
     public static LinkedList < Player > makeTable() {
 
-        Integer[] options = {
-            4,
-            5,
-            6,
-            7,
-            8
-        };
+        Integer[] options = {4,5,6,7,8};
+        
         int option = JOptionPane.showOptionDialog(null, "How many players?", null, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, null);
-
 
         option += 4;
         //System.out.println(option);     
 
         LinkedList < Player > table = new LinkedList < Player > ();
-
-
 
         for (int i = 0; i < option; i++) {
 
@@ -41,8 +33,6 @@ public class Bang {
             playerTemp.setPlayer(i, 1);
             table.add(playerTemp);
         }
-
-
 
         return table;
     }
