@@ -32,6 +32,7 @@ public class Player {
 	int affiliation;
 	int arrows = 0;
 	boolean isHuman;
+   boolean isIdentified= false;
 	int gatling = 0;
 	int[] currentHand;
 	String playerName;
@@ -262,6 +263,7 @@ public class Player {
 		switch(affiliation) {
 		case 0:
 			System.out.print("Sheriff");
+         isIdentified=true;
 			break;
 		case 1:
 			System.out.print("Outlaw");
