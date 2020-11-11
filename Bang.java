@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.Scanner;
-
+import java.util.Random;
 
 public class Bang {
 	static int players =0; //number of players
@@ -184,7 +184,256 @@ public class Bang {
       return player;
    }
 	
-   public static void gameLoop(Player[] tableArray){
+   public static int[] getTarget(Player[] player, int players, int j, int distance){
+      
+      
+      int targetA;
+      int targetB;
+      if(j%players==0)
+         targetA=players-1;
+      else
+         targetA=(j-distance+players)%players;
+      targetB=(j+distance)%players;
+      
+      
+      
+      System.out.print("\nTarget A: " +player[targetA].playerName);
+      if(player[targetA].isIdentified==false)
+         System.out.print(" (unidentified)");
+      else{
+         System.out.print(" (");
+         player[targetA].dispAffiliation();
+         System.out.print(")");
+         }
+         
+      System.out.print("\nTarget B: "+player[targetB].playerName);
+      if(player[targetB].isIdentified==false)
+         System.out.print(" (unidentified)");
+      else{
+         System.out.print(" (");
+         player[targetB].dispAffiliation();
+         System.out.print(")");
+         }
+         
+         
+         int[] targets={targetA,targetB};
+         return targets;
+   
+   }
+   
+   
+   
+   
+   public static Player[] atkLogic(int[] hand, Player[] playerArray, int[] targets, int current){
+      int a = targets[0];
+      int b = targets[1];
+      int c = targets[0]-1;
+      int d = targets[1]+1;
+      if(c<0){ //if c is negative
+         c=playerArray.length-1;
+      }
+      if(d>(playerArray.length-1)){ //if d is bigger than array
+         d=d%playerArray.length;
+      }
+      
+      
+      Random rand = new Random();
+      
+      for(int z=0;z<hand.length;z++){
+         if(hand[z]==2){
+            if (playerArray[current].affiliation==0){ //Sherriff
+               if (playerArray[a].isIdentified==true){
+                  if(playerArray[a].affiliation!=2){
+                     System.out.print("\nSheriff Attacking ");
+                     playerArray[a].dispAffiliation();
+                     System.out.print(" "+playerArray[a].playerName);
+                     playerArray[a].health--;
+                  }
+               }
+               else if (playerArray[b].isIdentified==true){
+                  if(playerArray[b].affiliation!=2){
+                     System.out.print("\nSheriff Attacking ");
+                     playerArray[b].dispAffiliation();
+                     System.out.print(" "+playerArray[b].playerName);
+                     playerArray[b].health--;
+                  }
+               }
+            }
+            if (playerArray[current].affiliation==1){ //Outlaw
+               if (playerArray[a].isIdentified==true){
+                  if(playerArray[a].affiliation==0){
+                     System.out.print("\nOutlaw Attacking ");
+                     playerArray[a].dispAffiliation();
+                     System.out.print(" "+playerArray[a].playerName);
+                     playerArray[current].isIdentified=true; //makes outlaw known
+                     playerArray[a].health--;
+                  }
+               }
+               else if (playerArray[b].isIdentified==true){
+                  if(playerArray[b].affiliation==0){
+                     System.out.print("\nOutlaw Attacking ");
+                     playerArray[b].dispAffiliation();
+                     System.out.print(" "+playerArray[b].playerName);
+                     playerArray[current].isIdentified=true;
+                     playerArray[b].health--;
+                  }
+               }
+            }
+            
+            if (playerArray[current].affiliation==3){ //Renegade
+               if (playerArray[current].isIdentified==false)
+                  playerArray[current].isIdentified=true;
+               
+               
+               int random = rand.nextInt(2);
+               System.out.print("\nAttacking ");
+               if(playerArray[targets[random]].isIdentified==true)
+                  playerArray[targets[random]].dispAffiliation();
+               System.out.print(" "+playerArray[targets[random]].playerName);
+               playerArray[targets[random]].health--;
+            }
+      
+               
+         }
+       if(hand[z]==3){ //TWO SPACE SHOT - consider re-coding simpler later.
+            if (playerArray[current].affiliation==0){ //Sherriff
+               if (playerArray[c].isIdentified==true){
+                  if(playerArray[c].affiliation!=2){
+                     System.out.print("\nSheriff Attacking ");
+                     playerArray[c].dispAffiliation();
+                     System.out.print(" "+playerArray[c].playerName);
+                     playerArray[c].health--;
+                  }
+               }
+               else if (playerArray[b].isIdentified==true){
+                  if(playerArray[d].affiliation!=2){
+                     System.out.print("\nSheriff Attacking ");
+                     playerArray[d].dispAffiliation();
+                     System.out.print(" "+playerArray[d].playerName);
+                     playerArray[d].health--;
+                  }
+               }
+            }
+            if (playerArray[current].affiliation==1){ //Outlaw
+               if (playerArray[c].isIdentified==true){
+                  if(playerArray[c].affiliation==0){
+                     System.out.print("\nOutlaw Attacking ");
+                     playerArray[c].dispAffiliation();
+                     System.out.print(" "+playerArray[a].playerName);
+                     playerArray[current].isIdentified=true; //makes outlaw known
+                     playerArray[c].health--;
+                  }
+               }
+               else if (playerArray[d].isIdentified==true){
+                  if(playerArray[d].affiliation==0){
+                     System.out.print("\nOutlaw Attacking ");
+                     playerArray[d].dispAffiliation();
+                     System.out.print(" "+playerArray[d].playerName);
+                     playerArray[current].isIdentified=true;
+                     playerArray[d].health--;
+                  }
+               }
+            }
+            
+           if (playerArray[current].affiliation==3){ //Renegade
+               if (playerArray[current].isIdentified==false)
+                  playerArray[current].isIdentified=true;
+               
+               
+               
+               int random2 = rand.nextInt(2);
+               int target=d;
+               if (random2==0)
+                  target=c;
+               else if(random2==1)
+                  target=d;
+               
+               System.out.print("\nAttacking ");
+               if(playerArray[target].isIdentified==true)
+                  playerArray[target].dispAffiliation();
+               System.out.print(" "+playerArray[target].playerName);
+               playerArray[target].health--;
+            
+               
+            }
+      
+               
+         }
+      }
+            
+     return playerArray;
+   }
+   
+   public static Player[] healLogic(int[] hand, int j, Player[] tableArray){
+      int b = 0;
+      
+      Player player = tableArray[j];
+      Player Sheriff = new Player();
+      int sheriff=0;
+      for(int i = 0;i<hand.length;i++){
+         if(hand[i]==5){
+            if(player.affiliation==0||player.affiliation==1||player.affiliation==3){ //heal self if these 3
+               System.out.print("Self +1 ");
+               b++;
+            }
+            else if(player.affiliation==2){ //heal sheriff
+               System.out.print("Sheriff +1");
+               for(int k=0;k<tableArray.length;k++){
+                  if(tableArray[k].affiliation==0){
+                     sheriff=k;
+                     Sheriff=tableArray[sheriff];
+                     player.isIdentified=true; //Deputy is identified when healing the Sheriff
+                  }
+               }
+               b++;
+            }
+         }
+      }
+      
+      if(player.affiliation==2){
+         Sheriff.health = Sheriff.health + b;
+         tableArray[sheriff]=Sheriff;
+         tableArray[j]=player;
+         return tableArray;
+      }
+      else{
+         player.health = player.health + b;
+         tableArray[j]=player;
+         return tableArray;
+      }
+      
+      
+   }
+   
+   public static void handLogic(int[] hand){ //Collected
+      int a,b,d,g; //arrows, dynamite, gattling
+      a=0;
+      b=0;
+      d=0;
+      g=0;
+      for(int i=0; i<hand.length;i++){
+         if(hand[i]==1)
+            a++;
+         if(hand[i]==2)
+            d++;
+         if(hand[i]==5)
+            b++;
+         if(hand[i]==6)
+            g++;
+      }
+      if(a!=0)
+         System.out.print("+"+a+" Arrow, ");
+      if(d!=0)
+         System.out.print("+"+d+" Dynamite, ");
+      if(g!=0)
+         System.out.print("+"+g+" Gattling, ");
+      if(b!=0)
+         System.out.print("+"+b+" Beer, ");
+   }
+   
+   public static void gameLoop(Player[] tableArray, Dice dice){
+      Player prev = new Player();
+      Player next = new Player();
       int players = tableArray.length;
    
       System.out.print("\nOrder: \n");
@@ -200,14 +449,27 @@ public class Bang {
             tableArray[j%players].dispAffiliation();
             System.out.print(": ");
          }
-         System.out.print(tableArray[j%players].playerName+"'s turn.\n");
+         System.out.print(tableArray[j%players].playerName+"'s turn. ");
+         System.out.print(tableArray[j%players].health+"\n");
          System.out.print("\n1. Roll Dice | 2. Use Ability | 3. Use Dice | 4.Check Ability | 5. End Turn");
          System.out.print("\nThe Following Dice were rolled: ");
-         System.out.print("\nAttacked: ");
+         int hand[]=dice.makeHand(); //
+         tableArray[j%players].handAsText(hand);
          System.out.print("\nHealed: ");
-         System.out.print("\nCollected: ");
+         //tableArray[j%players].affiliation=2; //test to see if Deputies heal Sheriff
+         tableArray=healLogic(hand, j%players, tableArray); //how to use beers, all except dep heal self
+         System.out.print("\nCollected: "); 
+         handLogic(hand);
          System.out.print("\nLost: "+""+" health.");
          System.out.print("\nUsed: "+""+" ability.");
+         int t[] = getTarget(tableArray, players, j%players, 1);
+         System.out.print("\nAttacked: ");
+         //for(int i=0;i<hand.length;i++){
+            //if(hand[i]==2||hand[i]==3)
+               tableArray=atkLogic(hand, tableArray, t, j%players);
+         //}
+         
+         //getTarget(tableArray, players, j%players, 2);
          j++;
       }
       
@@ -223,7 +485,7 @@ public class Bang {
 		Player[] tableArray = tableArray(table);
 		randomizeTable(tableArray);
       
-      gameLoop(tableArray);
+      gameLoop(tableArray, dice);
 	}
 
 }
