@@ -226,7 +226,7 @@ public class Bang {
    
    public static Player[] atkLogic(int[] hand, Player[] playerArray, int[] targets, int current){
       int a = targets[0];
-      if(a<0){ //if a is negative
+      if(a<0){ //if c is negative
          a=playerArray.length+a;
       }
       int b = targets[1];
@@ -243,7 +243,7 @@ public class Bang {
       Random rand = new Random();
       
       for(int z=0;z<hand.length;z++){
-         if(hand[z]==2){
+         if(hand[z]==3){
             if (playerArray[current].affiliation==0){ //Sherriff
                if (playerArray[a].isIdentified==true){
                   if(playerArray[a].affiliation!=2){
@@ -261,6 +261,39 @@ public class Bang {
                      playerArray[b].health--;
                   }
                }
+            }
+            if (playerArray[current].affiliation==2){ //Deputy
+               if (playerArray[a].isIdentified==true){
+                  if(playerArray[a].affiliation!=0||playerArray[a].affiliation!=2){ //if they are not Sheriff nor Deputy
+                     System.out.print("\nDeputy Attacking ");
+                     playerArray[a].dispAffiliation();
+                     System.out.print(" "+playerArray[a].playerName);
+                     playerArray[current].isIdentified=true;
+                     playerArray[a].health--;
+                  }
+               }
+               else if (playerArray[b].isIdentified==true||playerArray[b].affiliation!=0){
+                  if(playerArray[b].affiliation!=0||playerArray[b].affiliation!=2){ //if they are not Sheriff nor Deputy
+                     System.out.print("\nDeputy Attacking ");
+                     playerArray[b].dispAffiliation();
+                     System.out.print(" "+playerArray[b].playerName);
+                     playerArray[current].isIdentified=true;
+                     playerArray[b].health--;
+                  }
+               }
+               else{
+                     if (playerArray[current].isIdentified==false) //if neither known
+                        playerArray[current].isIdentified=true;
+                     
+                     
+                     int random = rand.nextInt(2);
+                        System.out.print("\nDeputy Attacking ");
+                        if(playerArray[targets[random]].isIdentified==true)
+                           playerArray[targets[random]].dispAffiliation();
+                        System.out.print(" "+playerArray[targets[random]].playerName);
+                        playerArray[targets[random]].health--;
+                           
+                     }
             }
             if (playerArray[current].affiliation==1){ //Outlaw
                if (playerArray[a].isIdentified==true){
@@ -298,8 +331,9 @@ public class Bang {
       
                
          }
-       if(hand[z]==3){ //TWO SPACE SHOT - consider re-coding simpler later.
-            if (playerArray[current].affiliation==0){ //Sherriff
+         
+         if(hand[z]==4){ //TWO SPACE SHOT - consider re-coding simpler later.
+             if (playerArray[current].affiliation==0){ //Sherriff
                if (playerArray[c].isIdentified==true){
                   if(playerArray[c].affiliation!=2){
                      System.out.print("\nSheriff Attacking ");
@@ -317,25 +351,63 @@ public class Bang {
                   }
                }
             }
-            if (playerArray[current].affiliation==1){ //Outlaw
+            if (playerArray[current].affiliation==2){ //Deputy
                if (playerArray[c].isIdentified==true){
-                  if(playerArray[c].affiliation==0){
-                     System.out.print("\nOutlaw Attacking ");
+                  if(playerArray[c].affiliation!=0||playerArray[a].affiliation!=2){ //if they are not Sheriff nor Deputy
+                     System.out.print("\nDeputy Attacking ");
                      playerArray[c].dispAffiliation();
                      System.out.print(" "+playerArray[a].playerName);
-                     playerArray[current].isIdentified=true; //makes outlaw known
+                     playerArray[current].isIdentified=true;
                      playerArray[c].health--;
                   }
                }
-               else if (playerArray[d].isIdentified==true){
-                  if(playerArray[d].affiliation==0){
-                     System.out.print("\nOutlaw Attacking ");
+               else if (playerArray[d].isIdentified==true||playerArray[b].affiliation!=0){
+                  if(playerArray[d].affiliation!=0||playerArray[b].affiliation!=2){ //if they are not Sheriff nor Deputy
+                     System.out.print("\nDeputy Attacking ");
                      playerArray[d].dispAffiliation();
-                     System.out.print(" "+playerArray[d].playerName);
+                     System.out.print(" "+playerArray[b].playerName);
                      playerArray[current].isIdentified=true;
                      playerArray[d].health--;
                   }
                }
+               else{ //if neither identified
+                     if (playerArray[current].isIdentified==false)
+                        playerArray[current].isIdentified=true;
+
+                     int random2 = rand.nextInt(2);
+                     int target=d;
+                     if (random2==0)
+                        target=c;
+                     else if(random2==1)
+                        target=d;
+                     
+                     System.out.print("\nDeputy Attacking ");
+                     if(playerArray[target].isIdentified==true)
+                        playerArray[target].dispAffiliation();
+                     System.out.print(" "+playerArray[target].playerName);
+                     playerArray[target].health--;
+                     
+                     }
+                  }
+               if (playerArray[current].affiliation==1){ //Outlaw
+                     if (playerArray[c].isIdentified==true){
+                        if(playerArray[c].affiliation==0){
+                           System.out.print("\nOutlaw Attacking ");
+                           playerArray[c].dispAffiliation();
+                           System.out.print(" "+playerArray[a].playerName);
+                           playerArray[current].isIdentified=true; //makes outlaw known
+                           playerArray[c].health--;
+                        }
+                     }
+                     else if (playerArray[d].isIdentified==true){
+                        if(playerArray[d].affiliation==0){
+                           System.out.print("\nOutlaw Attacking ");
+                           playerArray[d].dispAffiliation();
+                           System.out.print(" "+playerArray[d].playerName);
+                           playerArray[current].isIdentified=true;
+                           playerArray[d].health--;
+                        }
+                     }
             }
             
            if (playerArray[current].affiliation==3){ //Renegade
