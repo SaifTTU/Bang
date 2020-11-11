@@ -26,6 +26,8 @@ public class Bang {
 
         LinkedList < Player > table = new LinkedList < Player > ();
 
+
+
         for (int i = 0; i < option; i++) {
 
 
@@ -33,6 +35,8 @@ public class Bang {
             playerTemp.setPlayer(i, 1);
             table.add(playerTemp);
         }
+
+
 
         return table;
     }
@@ -170,12 +174,19 @@ public class Bang {
 
         int targetA;
         int targetB;
-        if (j % players == 0)
+        int targetC;
+        int targetD;
+        
+        if (j % players == 0){
             targetA = players - 1;
-        else
+            targetC = players - 2;
+            }
+        else{
             targetA = (j - distance + players) % players;
+            targetC = (j - (2*distance) + players) % players;
+            }
         targetB = (j + distance) % players;
-
+        targetD = (j + (2*distance)) % players;
 
 
         System.out.print("\nTarget A: " + player[targetA].playerName);
@@ -195,11 +206,40 @@ public class Bang {
             player[targetB].dispAffiliation();
             System.out.print(")");
         }
-
+        
+        boolean twoSpace = true;
+        
+     /*   for(int i=0;i<player[j].currentHand.length;i++){
+            if(player[j % players].currentHand[i]==4)
+               twoSpace=true;
+        }  */
+        
+        if(twoSpace==true){
+               System.out.print("\nTarget C: " + player[targetC].playerName);
+                 if (player[targetC].isIdentified == false)
+                     System.out.print(" (unidentified)");
+                 else {
+                     System.out.print(" (");
+                     player[targetC].dispAffiliation();
+                     System.out.print(")");
+                 }
+         
+                 System.out.print("\nTarget D: " + player[targetD].playerName);
+                 if (player[targetD].isIdentified == false)
+                     System.out.print(" (unidentified)");
+                 else {
+                     System.out.print(" (");
+                     player[targetD].dispAffiliation();
+                     System.out.print(")");
+                 }
+        }
+        
 
         int[] targets = {
             targetA,
-            targetB
+            targetB,
+            targetC,
+            targetD
         };
         return targets;
 
