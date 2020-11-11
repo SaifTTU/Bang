@@ -226,6 +226,9 @@ public class Bang {
    
    public static Player[] atkLogic(int[] hand, Player[] playerArray, int[] targets, int current){
       int a = targets[0];
+      if(a<0){ //if a is negative
+         a=playerArray.length+a;
+      }
       int b = targets[1];
       int c = targets[0]-1;
       int d = targets[1]+1;
