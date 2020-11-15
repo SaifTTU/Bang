@@ -54,11 +54,10 @@ public class BangTest { //practice with making each ability work each turn, and 
         player=getAbility(5,-1,5, player); //Jourdonnais only takes 1 indian arrow damage
         player=getAbility(6,-1,6, player); //trade gat tokens for arrow
         player=getAbility(7,-1,7, player); //lucky duke up to 4 rerolls
-        player=getAbility(8,7,8, player); //take no damage from gattling 
+        player=getAbility(8,1,8, player); //take no damage from gattling 
         player=getAbility(9,8,9, player); //remove an arrow when taking damage
-
-        
-        
+        player=getAbility(10,-1,-1, player); //rose do what janet do but make it one space farther
+        player=getAbility(11,-1,-1, player); //sid - heal whoever you want
     }
     
     public static Player[] getAbility(int ability, int attacking, int attacked, Player[] player){
@@ -92,7 +91,12 @@ public class BangTest { //practice with making each ability work each turn, and 
       if(ability==9&&attacking!=9&&attacked==9){
          player = pedroRamirez(player,attacking,attacked); //rerolls: it will recursively loop up to 4 times based on if the user presses N for No to stop it.
       }
-      
+      if(ability==10){
+         player = roseDoolan(player[10].index, player);
+      }
+      if(ability==11){
+         player = sidKetchum(player);
+      }
       return player;
     }
     
@@ -329,12 +333,12 @@ public class BangTest { //practice with making each ability work each turn, and 
       if(attacking!=playerArray[8].index){
          System.out.print("\nPlayer "+attacking+" uses gattling attack!");
          for(int i=0;i<playerArray.length;i++){
-            if(i!=playerArray[8].index){
+            if(i!=playerArray[8].index||i==attacking){
                   //playerArray[i].health--;
-                  //System.out.print("\nPlayer "+playerArray[i].index+" takes damage.");
+                  System.out.print("\nPlayer "+playerArray[i].index+" takes damage.");
                }
             else{
-               //System.out.print("\nPlayer "+playerArray[8].index+" takes no damage.");
+               System.out.print("\nPlayer "+playerArray[8].index+" takes no damage.");
             }
          }
          System.out.print("\nPlayer "+playerArray[8].index+" takes no damage from gattling gun.");
@@ -342,12 +346,83 @@ public class BangTest { //practice with making each ability work each turn, and 
       return playerArray; 
    }
    public static Player[] pedroRamirez(Player[] playerArray, int attacking, int attacked){  
+      if(playerArray[9].index==attacked){ //if pedro was attacked
+         System.out.print("\nPlayer "+9+" takes damage from player "+attacking);
+         System.out.print("\nRemoving one arrow from player "+9);
+         if(playerArray[9].arrows>0){
+            playerArray[9].arrows--;
+         }
+      }
       return playerArray; 
    }
-   public static Player[] roseDoolan(Player[] playerArray){  
-      return playerArray; 
+   public static Player[] roseDoolan(int currentPlayer, Player[] playerArray){
+      int ones = 0;
+      int twos = 0;
+      int threes = 0;
+      for(int i=0;i<playerArray[2].currentHand.length; i++){
+         if(playerArray[2].currentHand[i]==3)
+            ones++;
+         if(playerArray[2].currentHand[i]==4)
+            twos++;   
+         if(playerArray[2].currentHand[i]==7)//threes as a 7th card type
+            threes++;  
+      }
+      System.out.print("\n\nPlayer: "+currentPlayer+" (Rose Doolan's - Exchange 1' for 2's AND 2's for 3's)\n");
+      System.out.print("\nUse Ability? Y or N? (Exchange 1' for 2's AND 2's for 3's) ");
+      char ros = sc.next().charAt(0); 
+      if((ones>0||twos>0)&&ros=='Y')
+      {
+         System.out.print("\nNumber of 1's: "+ones);
+         System.out.print("\nNumber of 2's: "+twos);
+         System.out.print("\nNumber of 3's: "+threes); //THREES are represented by the dice face "7"  which usually doesnt appear
+         System.out.print("\nSwitch 1's to 2's (A.): ("+ones+")");
+         System.out.print("\nSwitch 2's to 3's (B.): ("+twos+")");
+         System.out.print("\nSwitch 3's to 2's (C.): ("+threes+")");
+         System.out.print("\nCancel: N.");
+         ros = sc.next().charAt(0); 
+         if(ros=='A'){
+            for(int i=0;i<playerArray[2].currentHand.length;i++){ //only does it to 1 at a time
+               if(playerArray[2].currentHand[i]==3){
+                  playerArray[2].currentHand[i]=4;
+                  i=playerArray[2].currentHand.length;//aka stop looping
+                  roseDoolan(currentPlayer, playerArray); //rerolls the method
+               }
+            }
+         }
+         if(ros=='B'){
+            for(int i=0;i<playerArray[2].currentHand.length;i++){ //only does it to 1 at a time
+               if(playerArray[2].currentHand[i]==4){
+                  playerArray[2].currentHand[i]=7;
+                  i=playerArray[2].currentHand.length;//aka stop looping
+                  roseDoolan(currentPlayer, playerArray); //rerolls the method
+               }
+            }
+         }
+         if(ros=='C'){
+            for(int i=0;i<playerArray[2].currentHand.length;i++){ //only does it to 1 at a time
+               if(playerArray[2].currentHand[i]==7){
+                  playerArray[2].currentHand[i]=4;
+                  i=playerArray[2].currentHand.length;//aka stop looping
+                  roseDoolan(currentPlayer, playerArray); //rerolls the method
+               }
+            }
+         }
+      }
+   
+      return playerArray;
    }
    public static Player[] sidKetchum(Player[] playerArray){  
+      System.out.print("\nUse Ability? (Sid) Y or N? (Heal 1 Player)");
+      char sid = sc.next().charAt(0); 
+      if(sid=='Y'){
+         System.out.print("\nWhich player would you like to heal?");
+         for(int i=0;i<playerArray.length;i++){
+            System.out.print("\n"+i+".");
+         }
+         int sid2 = sc.nextInt(); 
+         
+         playerArray[sid2].health++;
+      }
       return playerArray; 
    }
    public static Player[] slabTheKiller(Player[] playerArray){  
