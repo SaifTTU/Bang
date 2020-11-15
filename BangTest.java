@@ -8,8 +8,13 @@ public class BangTest { //practice with making each ability work each turn, and 
     
     public static void main(String[] args) {
       
-        int turn;
-        Player player[] = new Player[12];
+        int whoseTurn; //which character's turn it is
+        int lastTurn; //which character had last turn
+        int attacking;
+        int attacked;
+        
+        
+        Player player[] = new Player[16];
         player[0] = new Player();
         player[0].index=0;
         player[1] = new Player();
@@ -43,6 +48,18 @@ public class BangTest { //practice with making each ability work each turn, and 
         player[10].index=10;
         player[11] = new Player();
         player[11].index=11;
+        //--------new----------------------------------------------------------------------
+        player[12] = new Player();
+        player[12].index=12;
+        player[12].currentHand = dice.makeHand(); //replace a beer for one-double damage
+        player[13] = new Player();
+        player[13].index=13;
+        player[13].currentHand = dice.makeHand(); //if no 1's or 2's are rolled, 2 life gained
+        player[14] = new Player(); //when another player dies gain 2 life points
+        player[14].index=14;
+        player[15] = new Player(); //actually the 16th character, when he rolls 2 gattling parts he can use it like 3. (only 1 time though)
+        player[15].index=15;
+        player[15].currentHand = dice.makeHand();
         //------------------------------------------------------------------------------
         // ** -1 means not in effect**
         //int ability, int attacking, int attacked, Player[] player)
@@ -58,6 +75,16 @@ public class BangTest { //practice with making each ability work each turn, and 
         player=getAbility(9,8,9, player); //remove an arrow when taking damage
         player=getAbility(10,-1,-1, player); //rose do what janet do but make it one space farther
         player=getAbility(11,-1,-1, player); //sid - heal whoever you want
+        //-------new-----------------------------------------------------------------------
+        player=getAbility(12,12,-1, player); //slab - whenever he attacks, can trade beer for double damage
+        player=getAbility(13,-1,-1,player); //if no 1's or 2's are rolled, 2 life gained
+          attacking = 13; //we'll need to refresh these variables for it to work, not only every turn,but also on every individual dice decision as well.
+          attacked = 12; //records the target that is chosen at any given momment
+          player[attacked].health=1;
+          player[attacking].currentHand = dice.makeHand();
+        player=getAbility(14,attacking,attacked,player); //when another player dies gain 2 life points - for this example lets set player 12 health real low and have player 13 attack player 12 dead.
+        player=getAbility(15,-1,-1,player); //
+        //------------------------------------------------------------------------------
     }
     
     public static Player[] getAbility(int ability, int attacking, int attacked, Player[] player){
@@ -96,6 +123,18 @@ public class BangTest { //practice with making each ability work each turn, and 
       }
       if(ability==11){
          player = sidKetchum(player);
+      }
+      if(ability==12&&attacking==12){
+         player = slabTheKiller(player);
+      }
+      if(ability==13){
+         player = suzyLafayette(player);
+      }
+      if(ability==14&&attacking!=14&&attacked!=14){ //if the attacking and attacked are not vulture
+         player = vultureSam(player, attacking, attacked); //need to know whose attacking whom, and scan for if they attacked player has less than 0 health in order to determine if they are dead
+      }
+      if(ability==14){
+         player = willyTheKid(player);
       }
       return player;
     }
@@ -335,19 +374,19 @@ public class BangTest { //practice with making each ability work each turn, and 
          for(int i=0;i<playerArray.length;i++){
             if(i!=playerArray[8].index||i==attacking){
                   //playerArray[i].health--;
-                  System.out.print("\nPlayer "+playerArray[i].index+" takes damage.");
+                  //System.out.print("\nPlayer "+playerArray[i].index+" takes damage.");
                }
             else{
-               System.out.print("\nPlayer "+playerArray[8].index+" takes no damage.");
+               //System.out.print("\nPlayer "+playerArray[8].index+" takes no damage.");
             }
          }
-         System.out.print("\nPlayer "+playerArray[8].index+" takes no damage from gattling gun.");
+         System.out.print("\nPlayer "+playerArray[8].index+" takes no damage from gattling gun.\n");
       }
       return playerArray; 
    }
    public static Player[] pedroRamirez(Player[] playerArray, int attacking, int attacked){  
       if(playerArray[9].index==attacked){ //if pedro was attacked
-         System.out.print("\nPlayer "+9+" takes damage from player "+attacking);
+         System.out.print("\n(passive)Player "+9+" takes damage from player "+attacking);
          System.out.print("\nRemoving one arrow from player "+9);
          if(playerArray[9].arrows>0){
             playerArray[9].arrows--;
@@ -426,15 +465,129 @@ public class BangTest { //practice with making each ability work each turn, and 
       return playerArray; 
    }
    public static Player[] slabTheKiller(Player[] playerArray){  
+      int beerCount = 0;
+      int ones = 0;
+      int twos = 0;
+      int index= playerArray[12].index;
+      
+      for(int i=0;i<playerArray[12].currentHand.length;i++){
+         if(playerArray[12].currentHand[i]==3)
+            ones++;
+         if(playerArray[12].currentHand[i]==4)
+            twos++;
+         if(playerArray[12].currentHand[i]==5)
+            beerCount++;
+      }
+      //System.out.print("\nNumber of beers: "+beerCount);
+      //System.out.print("\nNumber of ones: "+ones);
+      //System.out.print("\nNumber of twos: "+twos);
+      
+      System.out.print("\nUse Ability? (Slab) Y or N? (Trade 1 Beer for Double Damage)");
+      System.out.print(" ( ("+beerCount+") beers, ("+ones+") 1's, and ("+twos+") 2's )");
+      playerArray[12].handAsText(playerArray[12].currentHand);
+      char slab = sc.next().charAt(0); 
+      if(slab=='Y'){
+         System.out.print("\nNumber of beers: "+beerCount);
+         System.out.print("\nNumber of ones: "+ones);
+         System.out.print("\nNumber of twos: "+twos);
+         
+         if(beerCount<1||(ones<1&&twos<1)){
+               System.out.print("\nCannot use this ability.");
+            }
+         else{
+            System.out.print("\nDouble a One: A. ("+ones+")");
+            System.out.print("\nDouble a Two: B. ("+twos+")");
+            System.out.print("\nCancel: N. ");
+            char slab2 = sc.next().charAt(0);
+            int distance = slab2-64;//to make A equal 1, minus 64
+           if(slab2!='N'&&(slab2=='A'||slab2=='B')){ //if they didnt cancel and provided a valid answer
+                System.out.print("\nWho would you like to attack: ");
+                System.out.print("Player: " +playerArray[index-(distance)].index+"?"); 
+                System.out.print("Player: " +playerArray[index+(distance)].index+"?"); 
+           }
+         
+         }
+      }
       return playerArray; 
    }
    public static Player[] suzyLafayette(Player[] playerArray){  
+      playerArray[13].handAsText(playerArray[13].currentHand);
+      System.out.print("\nAblity Player "+13+" gains 2 health if they drew no attack cards");
+      
+      int ones = 0;
+      int twos = 0;
+      for(int i=0;i<playerArray[13].currentHand.length;i++){
+         if(playerArray[13].currentHand[i]==3)
+            ones++;
+         if(playerArray[13].currentHand[i]==4)
+            twos++;
+      }
+      if(ones==0&&twos==0){
+         System.out.print("  |  Player: "+13+" drew no attack cards. Healed for 2");
+         playerArray[13].health+=2;
+      }
+      else{
+         System.out.print("  |  Player: "+13+" could not use their ability this turn. (Gains 2 health if no attack cards drawn)");
+      }
+      
+      
+      
       return playerArray; 
    }
-   public static Player[] vultureSam(Player[] playerArray){  
+   public static Player[] vultureSam(Player[] playerArray, int attacking, int attacked){
+      int reduceHealth = 0;  //just for testing
+      System.out.print("\n\nPlayer: "+attacking+" attacked Player "+attacked+" Health: ("+playerArray[attacked].health+")");
+      for(int i =0;i<playerArray[attacking-1].currentHand.length;i++){
+         if(playerArray[attacking-1].currentHand[i]==3){ //if attacking had a 1 space in their hand
+              playerArray[attacking-1].currentHand[i]=-1; //also nullify this card, make it -1
+              reduceHealth++;
+         }
+         if(playerArray[attacking-1].currentHand[i]==4){
+              playerArray[attacking-1].currentHand[i]=-1; 
+              reduceHealth++; //the reduce health variable is just for testing
+         }
+      }
+      playerArray[attacked].health = playerArray[attacked].health - reduceHealth;
+      
+      playerArray[attacked].health--;
+      if(playerArray[attacked].health<=0){
+         System.out.print("  |   Additionally, Player: "+attacking+" killed Player "+attacked+" Health: ("+playerArray[attacked].health+")");
+         System.out.print("\nPlayer: "+playerArray[14].index+" gains 2 health, as a result of this death.");
+         playerArray[14].health++;
+      }
+         
       return playerArray; 
    }
    public static Player[] willyTheKid(Player[] playerArray){  
+      int gatCount = 0;
+      for(int i =0;i<playerArray[15].currentHand.length;i++){
+            if(playerArray[15].currentHand[i]==6){
+               gatCount++;
+            }
+      }
+      System.out.print("\n\nRolled ("+gatCount+") gattlings. ");
+      System.out.print("\nUse Ability? Y or N? (Use 2 Gattling Parts in Place of 3. Only 1 allowed to use once per turn.)    ("+gatCount+")");
+      playerArray[15].handAsText(playerArray[15].currentHand);
+      char wil = sc.next().charAt(0); 
+      if(wil=='Y'){
+         if(gatCount>2){
+            System.out.print("Do you want to use the gattlings? Y or N? ("+gatCount+")");
+            char wil2 = sc.next().charAt(0);
+            if(wil2=='Y'){
+               System.out.print("\nUsed Gattling Gun on all players"); //just did the gattling gun thing manually
+               for(int i = 0; i<playerArray.length;i++){
+                  if(playerArray[i].index!=8||playerArray[i]!=playerArray[15]){
+                     playerArray[i].health--;
+                  }
+               }
+            }
+         }
+         else{
+            System.out.print("\nNot enough gattlings");
+         }
+         
+      }
+   
       return playerArray; 
    }
 }
