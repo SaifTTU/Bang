@@ -3,12 +3,13 @@ import java.util.Scanner;
 public class BangTest { //practice with making each ability work each turn, and activate when its supposed to
     public static Scanner sc = new Scanner(System.in);
     public static int globalArrows = 0;
+    public static boolean globalGatting = true; //set when gattling attack happens
     public static Dice dice = new Dice();
     
     public static void main(String[] args) {
       
         int turn;
-        Player player[] = new Player[6];
+        Player player[] = new Player[12];
         player[0] = new Player();
         player[0].index=0;
         player[1] = new Player();
@@ -17,24 +18,47 @@ public class BangTest { //practice with making each ability work each turn, and 
         player[2].currentHand = dice.makeHand(); //giving her a dice hand, before-hand, in order to switch between
         player[2].index=2;
         player[3] = new Player(); //we'll pretend janet attacks el
-        player[3].index=4;
+        player[3].index=3;
         player[4] = new Player();
         player[4].currentHand = dice.makeHand();
         player[4].health=3; //for testing purposes setting jesse's health < 4
-        player[4].index=5;
+        player[4].index=4;
         player[5] = new Player();
         globalArrows=7; //since Jourdonnais' ability has to do with arrows
         player[5].currentHand = dice.makeHand(); //if this hand has any arrows the ability will trigger
-        player[5].index=6;
+        player[5].index=5;
         
         
+        //-----incomplete---------------------------------------------------------------
+        player[6] = new Player(); //kitCarlson
+        player[6].index=6; //discard a players arrow for every gattling in your hand
+        player[6].currentHand = dice.makeHand();
+        player[7] = new Player(); //luckyDuke
+        player[7].index=7; //reroll
+        player[8] = new Player(); //paulRegret
+        player[8].index=8; //no damage taken from Gattlings
+        player[9] = new Player();
+        player[9].index=9;
+        player[10] = new Player();
+        player[10].index=10;
+        player[11] = new Player();
+        player[11].index=11;
+        //------------------------------------------------------------------------------
+        // ** -1 means not in effect**
         //int ability, int attacking, int attacked, Player[] player)
         player=getAbility(0,1,0, player); //bart attacked by black
-        player=getAbility(1,-1,-1, player); //black gets to reroll, -1 means not in effect
+        player=getAbility(1,-1,-1, player); //black gets to reroll, 
         player=getAbility(2,-1,-1, player); //janet can switch 1's and 2's
         player=getAbility(3,2,3, player); //el gives arrow to another player
         player=getAbility(4,-1,4, player); //beers count twice for jesse
         player=getAbility(5,-1,5, player); //Jourdonnais only takes 1 indian arrow damage
+        player=getAbility(6,-1,6, player); //trade gat tokens for arrow
+        player=getAbility(7,-1,7, player); //lucky duke up to 4 rerolls
+        player=getAbility(8,7,8, player); //take no damage from gattling 
+        player=getAbility(9,8,9, player); //remove an arrow when taking damage
+
+        
+        
     }
     
     public static Player[] getAbility(int ability, int attacking, int attacked, Player[] player){
@@ -55,6 +79,18 @@ public class BangTest { //practice with making each ability work each turn, and 
       }
       if(ability==5){
          player = jourdonnais(player); //we'll also be using "globabl arrows" as a parameter in this. (unwritten because its global)
+      }
+      if(ability==6){
+         player = kitCarlson(player); 
+      }
+      if(ability==7){
+         player = luckyDuke(player,0); //rerolls: it will recursively loop up to 4 times based on if the user presses N for No to stop it.
+      }
+      if(ability==8){
+         player = paulRegret(player, attacking); 
+      }
+      if(ability==9&&attacking!=9&&attacked==9){
+         player = pedroRamirez(player,attacking,attacked); //rerolls: it will recursively loop up to 4 times based on if the user presses N for No to stop it.
       }
       
       return player;
@@ -158,6 +194,7 @@ public class BangTest { //practice with making each ability work each turn, and 
    public static Player[] jesseJones(Player[] playerArray){
       int beerCount = 0;
       System.out.print("\nPlayer "+ playerArray[4].index+" has less than 4 health");
+      
       playerArray[4].handAsText(playerArray[4].currentHand);
       for(int i =0;i<playerArray[4].currentHand.length;i++){
          if(playerArray[4].currentHand[i]==5)
@@ -179,6 +216,9 @@ public class BangTest { //practice with making each ability work each turn, and 
                }
          }
       }
+      else{
+         //System.out.print("\nCannot use ability this turn. Not enough beers.");
+      }
       
       return playerArray;      
    }
@@ -193,9 +233,10 @@ public class BangTest { //practice with making each ability work each turn, and 
          System.out.print("\nArrows: "+globalArrows);
          globalArrows=0; //setting it to 0 so it doesnt do indian attack twice
          for(int i =0;i<playerArray.length;i++){
-            if(i!=5)
-               playerArray[i].health=playerArray[i].health-playerArray[i].arrows;
-            else if(i==5){
+            if(i!=5){
+               //playerArray[i].health=playerArray[i].health-playerArray[i].arrows;
+               }
+            if(i==5){
                System.out.print("\nPlayer "+5+" only loses 1 health to the indians.");
             }
          }
@@ -203,6 +244,123 @@ public class BangTest { //practice with making each ability work each turn, and 
       }
       
       return playerArray;      
+   }
+   public static Player[] kitCarlson(Player[] playerArray){ //remove an arrow from any player (per gattling)
+      int gatCount = 0;
+      for(int i=0;i<playerArray[6].currentHand.length;i++){
+         if(playerArray[6].currentHand[i]==6)
+         gatCount++;
+      }
+      System.out.print("\n\nPlayer: "+playerArray[6].index);
+      System.out.print("\nNumber of gattlings: ("+gatCount+") (Trade Gattling to inflict Arrow)");
+      if(gatCount>0){
+         System.out.print("\nUse Ability? Y or N? (Trade Gattling to inflict Arrow)");
+         char kit = sc.next().charAt(0); //this is where the option begins
+         if(kit=='Y'){
+            System.out.print("\nHere is a list of players: ");
+            for(int i=0;i<playerArray.length;i++){
+               System.out.print("\n"+i+".");
+            }
+            System.out.print("\nWho would you like to add arrows to? (N to cancel)");
+            char kit2 = sc.next().charAt(0);
+            if(kit2!='N'){
+               for(int i=0;i<playerArray[6].currentHand.length;i++){
+                  if(playerArray[6].currentHand[i]==6){
+                     playerArray[6].currentHand[i]=-1;
+                     i=playerArray[6].currentHand.length;
+                  }
+               }
+            }
+            switch(kit2) {
+               case '0' :
+                  playerArray[0].arrows++; //adds an arrow to that selected player 
+                  globalArrows++; //increases the total ammount of arrows by 1
+                  break;
+               case '1' :
+                  playerArray[1].arrows++;
+                  globalArrows++; 
+                  break;
+               case '2' :
+                  playerArray[2].arrows++;
+                  globalArrows++; 
+                  break;
+               case '3' :
+                  playerArray[3].arrows++;
+                  globalArrows++; 
+                  break;
+               case '4' :
+                  playerArray[4].arrows++;
+                  globalArrows++; 
+                  break;
+               case '5' :
+                  playerArray[5].arrows++;
+                  globalArrows++; 
+                  break;
+               case '6' :
+                  playerArray[6].arrows++;
+                  globalArrows++; 
+                  break;
+               case '7' :
+                  playerArray[7].arrows++; //the eigth ( and last possible ) player
+                  globalArrows++; 
+               default : //cancelling
+                  return playerArray;
+            }
+            playerArray=kitCarlson(playerArray); //recursive
+         }
+         
+      }
+      
+      return playerArray;
+   }
+   public static Player[] luckyDuke(Player[] playerArray, int times){ //may reroll. 
+      if(times<4){
+         System.out.print("\nUse Ability? Y or N? (Reroll, unless you reroll 4 times)");
+         char luck = sc.next().charAt(0); //this is a new option
+         if(luck=='Y'){
+               playerArray[7].currentHand=dice.makeHand();
+               playerArray[7].handAsText(playerArray[1].currentHand);
+               playerArray=luckyDuke(playerArray, times+1);
+            }
+      }
+      return playerArray; //can do this 4 times
+   }
+   public static Player[] paulRegret(Player[] playerArray, int attacking){  
+      if(attacking!=playerArray[8].index){
+         System.out.print("\nPlayer "+attacking+" uses gattling attack!");
+         for(int i=0;i<playerArray.length;i++){
+            if(i!=playerArray[8].index){
+                  //playerArray[i].health--;
+                  //System.out.print("\nPlayer "+playerArray[i].index+" takes damage.");
+               }
+            else{
+               //System.out.print("\nPlayer "+playerArray[8].index+" takes no damage.");
+            }
+         }
+         System.out.print("\nPlayer "+playerArray[8].index+" takes no damage from gattling gun.");
+      }
+      return playerArray; 
+   }
+   public static Player[] pedroRamirez(Player[] playerArray, int attacking, int attacked){  
+      return playerArray; 
+   }
+   public static Player[] roseDoolan(Player[] playerArray){  
+      return playerArray; 
+   }
+   public static Player[] sidKetchum(Player[] playerArray){  
+      return playerArray; 
+   }
+   public static Player[] slabTheKiller(Player[] playerArray){  
+      return playerArray; 
+   }
+   public static Player[] suzyLafayette(Player[] playerArray){  
+      return playerArray; 
+   }
+   public static Player[] vultureSam(Player[] playerArray){  
+      return playerArray; 
+   }
+   public static Player[] willyTheKid(Player[] playerArray){  
+      return playerArray; 
    }
 }
 
@@ -212,7 +370,7 @@ class Player {
 	int affiliation;
 	int arrows = 0;
 	boolean isHuman;
-   boolean isIdentified= false;
+   boolean isIdentified= false; //added this
 	int gatling = 0;
 	int[] currentHand;
 	String playerName;
