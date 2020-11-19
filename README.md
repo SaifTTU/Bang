@@ -17,7 +17,9 @@
  
   how to make this more object oriented?
 
-
+  **win condition for each of the affiliations
+  
+  **creatiing globabl variables that change each turn
 
  character we'll include from the expansions:
  
